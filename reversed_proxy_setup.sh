@@ -49,7 +49,7 @@ download_with_progress "$download_url" "$download_filename"
 # -------------------------------------------------
 
 echo "-> Extracting rathole"
-check_and_install_unzip()
+check_and_install_unzip
 
 # -------------------------------------------------
 if [[ "${download_filename}" =~ \.zip$ ]]; then
