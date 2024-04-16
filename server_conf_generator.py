@@ -8,6 +8,7 @@ from requests import get
 import os
 
 TUNNLE_CONFIG_AMOUNT = sys.argv[1]
+SESSION_NAME = sys.argv[2]
 
 os.chdir(os.path.join(os.getcwd(), "tunnel_config"))
 
@@ -70,8 +71,8 @@ if __name__ == "__main__":
         for port in available_ports:
             i = i + 1
             token = generate_token()
-            generate_server_config(token, port, f"udp{i}", f"server_udp{i}")
-            generate_client_config(token, f"{server_ip}:{port}", f"udp{i}", f"client_udp{i}")
+            generate_server_config(token, port, f"{SESSION_NAME}{i}", f"{SESSION_NAME}{i}")
+            generate_client_config(token, f"{server_ip}:{port}", f"{SESSION_NAME}{i}", f"client_udp{i}")
             print(f"-> Config {i} ok!")
     else:
         print(f"No available ports found in the range {start_port} to {end_port}.")

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
+read -p "Session name: " SESSION_NAME
 
 echo
 echo
@@ -88,4 +89,4 @@ mkdir tunnel_config &> /dev/null
 
 pip3 install requests &> /dev/null
 
-./server_conf_generator.py ${TUNNEL_AMOUNT}
+./server_conf_generator.py ${TUNNEL_AMOUNT} ${SESSION_NAME}
