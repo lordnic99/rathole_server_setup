@@ -89,7 +89,7 @@ echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnels"
 
 mkdir tunnel_config &> /dev/null
 
-sudo apt install python3-pip &> /dev/null
+sudo apt install python3-pip -y &> /dev/null
 
 pip3 install requests &> /dev/null
 
