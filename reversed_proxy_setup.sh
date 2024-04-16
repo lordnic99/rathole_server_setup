@@ -1,19 +1,20 @@
-#!/bin/env bash
+#!/usr/bin/env bash
+
+read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
 
 download_with_progress() {
   local url="$1"
   local filename="$2"
-
   if [[ ! -f "$filename" ]]; then
     wget -qO "$filename" "$url" &> /dev/null
     if [[ $? -eq 0 ]]; then
-      echo "Downloaded '$filename'"
+      echo "-> Downloaded '$filename'"
     else
-      echo "Error downloading '$filename'"
+      echo "-> Error downloading '$filename'"
       exit 1
     fi
   else
-    echo "'$filename' already exists. Skipping download."
+    echo "-> '$filename' already exists. Skipping download."
   fi
 }
 
@@ -32,24 +33,16 @@ echo "[INFO] Extracting rathole"
 # -------------------------------------------------
 if [[ "${download_filename}" =~ \.zip$ ]]; then
   unzip -q "$download_filename"
-elif [[ "${download_filename}" =~ \.tar\.gz$ ]]; then
-  tar -xf "$download_filename"
+  echo "-> Rathole extract ok!"
 else
-  echo "Unsupported archive format for '$download_filename'"
+  echo "-> Unsupported archive format for '$download_filename'"
   exit 1
 fi
 
 # -------------------------------------------------
 
+chmod +x ./rathole
 
-# extracted_filename="${download_filename%.*}"  # Remove extension
-# chmod +x "./$extracted_filename"
+# mv rathole /usr/local/bin/
+rm -f "$download_filename"  
 
-# Move the executable to a system-wide location (use with caution)
-# Consider using a user-specific directory (e.g., ~/.local/bin) instead
-# sudo mv "./$extracted_filename" /usr/local/bin/
-
-# Clean up (optional)
-# rm -f "$download_filename"  # Uncomment to remove the downloaded archive
-
-echo "Installation complete!"
