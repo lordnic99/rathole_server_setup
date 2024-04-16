@@ -71,8 +71,8 @@ if __name__ == "__main__":
         for port in available_ports:
             i = i + 1
             token = generate_token()
-            generate_server_config(token, port, f"{SESSION_NAME}{i}", f"{SESSION_NAME}{i}")
-            generate_client_config(token, f"{server_ip}:{port}", f"{SESSION_NAME}{i}", f"client_udp{i}")
+            generate_server_config(token, port, f"{SESSION_NAME}{i}", f"server_{SESSION_NAME}{i}")
+            generate_client_config(token, f"{server_ip}:{port}", f"{SESSION_NAME}{i}", f"client_{SESSION_NAME}{i}")
             print(f"-> Config {i} ok!")
     else:
         print(f"No available ports found in the range {start_port} to {end_port}.")
