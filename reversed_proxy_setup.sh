@@ -2,6 +2,10 @@
 
 read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
 
+echo "-------- downloading & install rathole to /usr/local/bin/ ----------"
+
+sleep 2
+
 check_and_install_unzip() {
   if ! command -v unzip &> /dev/null; then
     echo "-> unzip is not installed. Installing..."
@@ -68,3 +72,10 @@ mv -f rathole /usr/local/bin/
 
 rm -f "$download_filename"  
 
+# --------------------- end logic for download rathole and install it to /usr/local/bin/ --------------------------
+
+
+# --------------------- logic for generate rathole server conf file ----------------------------
+
+echo "-------- preapre rathole config on /etc/rathole/  ----------"
+echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnel"
