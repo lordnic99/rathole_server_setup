@@ -93,6 +93,7 @@ sudo apt install python3-pip -y &> /dev/null
 
 pip3 install requests &> /dev/null
 
+
 ./server_conf_generator.py ${TUNNEL_AMOUNT} ${SESSION_NAME}
 
 sudo cp -f ratholes@.service /etc/systemd/system/
