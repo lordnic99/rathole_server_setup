@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
+
 read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
 read -p "Session name: " SESSION_NAME
 
