@@ -2,6 +2,8 @@
 
 read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
 
+echo
+echo
 echo "-------- downloading & install rathole to /usr/local/bin/ ----------"
 
 sleep 2
@@ -77,5 +79,13 @@ rm -f "$download_filename"
 
 # --------------------- logic for generate rathole server conf file ----------------------------
 
+echo
+echo
 echo "-------- preapre rathole config on /etc/rathole/  ----------"
-echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnel"
+echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnels"
+
+mkdir tunnel_config &> /dev/null
+
+pip3 install requests &> /dev/null
+
+./server_conf_generator.py ${TUNNEL_AMOUNT}
