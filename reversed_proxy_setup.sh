@@ -87,6 +87,35 @@ echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnels"
 
 mkdir tunnel_config &> /dev/null
 
+sudo apt install python3-pip &> /dev/null
+
 pip3 install requests &> /dev/null
 
 ./server_conf_generator.py ${TUNNEL_AMOUNT} ${SESSION_NAME}
+
+sudo cp -f ratholes@.service /etc/systemd/system/
+
+sudo mkdir -p /etc/rathole &> /dev/null
+
+sudo systemctl daemon-reload
+
+sudo mv -f tunnel_config/server* /etc/rathole/
+
+echo "----------------------------------------------"
+echo
+echo
+echo "-------------------- starting rathole instance --------------"
+config_dir="/etc/rathole"
+
+for filename in "$config_dir"/*.toml; do
+  service_name="${filename##*/}"
+  service_name="${service_name%.*}"
+
+  sudo systemctl enable "ratholes@$service_name" --now &>/dev/null
+
+  echo "Started service: ratholes@$service_name"
+done
+
+echo "-> Showing all instance status"
+
+sudo systemctl list-units --type=service --no-pager | grep ratholes
