@@ -107,7 +107,7 @@ sudo apt-get install -y python3-flask-sqlalchemy &> /dev/null
 export DEBIAN_FRONTEND=noninteractive
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
-
+sudo cp -f my.cnf /etc/mysql/my.cnf
 sudo systemctl restart mysql
 
 mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
@@ -148,3 +148,14 @@ sudo cp -r Reversed_Server ~/.reversed_server
 sudo cp -f Reversed_Server.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable Reversed_Server --now
+
+echo
+echo "-> Everything has been installed correctly, use the information below your client setup"
+
+echo
+echo
+echo
+echo "--------------------------------------------------------------------"
+echo "API SERVER: ${PUBLIC_IP}:44444"
+echo "SECRET KEY: ${SECRET_KEY}"
+echo "--------------------------------------------------------------------"
