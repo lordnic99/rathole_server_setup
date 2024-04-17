@@ -6,18 +6,15 @@ Example cURL requests:
 # POST /createtunnel
 --- failed case
 
-curl -X POST http://127.0.0.1:45642/createtunnel \
+curl -X POST http://127.0.0.1:44444/createtunnel \
      -H "Content-Type: application/json" \
      -H "Authorization: your_secret_token" \
      -d '{"name": "exampleName"}'
 
 --- ok case
-curl -X POST http://127.0.0.1:45642/createtunnel \
-     -H "Content-Type: application/json" \
-     -H "Authorization: 3KCGC3QjUzskyJLOxzWG4pOmg6oeyL-J34hyqg9n3wA" \
-     -d '{"name": "exampleName"}'
+curl -X POST http://139.99.89.45:44444/createtunnel -H "Content-Type: application/json" -H "Authorization: 3KCGC3QjUzskyJLOxzWG4pOmg6oeyL-J34hyqg9n3wA" -d '{"name": "hoang"}'
 
 # GET /gettunnel
-curl http://127.0.0.1:45642/gettunnel?name=exampleName \
+curl http://127.0.0.1:44444/gettunnel?name=hoang \
      -H "Authorization: 3KCGC3QjUzskyJLOxzWG4pOmg6oeyL-J34hyqg9n3wA"
 

@@ -2,6 +2,8 @@
 
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
+sudo apt-get update -y &> /dev/null
+
 set_secret_key() {
    if [ -f .env ]; then
        if grep -q '^SECRET_KEY=' .env; then
@@ -30,35 +32,32 @@ download_with_progress() {
   fi
 }
 
+# --------------------- logic for download rathole and install it to /usr/local/bin/ -----------------------------
+
 echo "-------- downloading & install rathole to /usr/local/bin/ ----------"
+echo
 
 if ! command -v unzip &> /dev/null; then
     echo "-> unzip is not installed. Installing..."
-    sudo apt-get update -y && sudo apt-get install unzip -y &> /dev/null
+    sudo apt-get install unzip -y &> /dev/null
 fi
 
 echo "-> Start downloading rathole"
 
-# ----------- ratholde download logic ------------
 download_url="https://github.com/rapiz1/rathole/releases/latest/download/rathole-x86_64-unknown-linux-gnu.zip"
 download_filename="rathole.zip"
 
 download_with_progress "$download_url" "$download_filename"
 
-# -------------------------------------------------
-
 echo "-> Extracting rathole"
 
-# -------------------------------------------------
 if [[ "${download_filename}" =~ \.zip$ ]]; then
   unzip -q "$download_filename"
-  echo "-> Rathole extract ok!"
+  echo "-> Rathole extract ok"
 else
   echo "-> Unsupported archive format for '$download_filename'"
   exit 1
 fi
-
-# -------------------------------------------------
 
 chmod +x ./rathole
 
@@ -72,6 +71,8 @@ sudo mkdir -p /etc/rathole &> /dev/null
 
 sudo systemctl daemon-reload
 
+echo "-> Rathole install ok"
+
 # --------------------- end logic for download rathole and install it to /usr/local/bin/ --------------------------
 
 
@@ -81,7 +82,7 @@ sudo systemctl daemon-reload
 echo
 echo
 echo "-------- preapre for running reversed proxy server  ----------"
-
+echo
 
 sudo apt install python3-pip -y &> /dev/null
 
@@ -89,13 +90,30 @@ sudo apt install python3-requests -y &> /dev/null
 
 sudo apt-get install -y python3-flask &> /dev/null
 
+sudo apt-get install -y python3-sqlalchemy &> /dev/null
+
 set_secret_key
 
 export $(cat .env)
 
 chmod +x Reversed_Server/run.py
 
-./Reversed_Server/run.py
+echo "-> Setting up database for the server"
+
+# ---- prepare sql database -------------
+sudo apt-get install mysql-server -y &> /dev/null
+sudo apt-get install -y python3-flask-sqlalchemy &> /dev/null
+
+export DEBIAN_FRONTEND=noninteractive
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
+
+sudo systemctl restart mysql
+
+mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
+
+
+# ---- sql database ok -------------
 
 
 
