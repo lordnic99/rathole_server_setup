@@ -2,34 +2,17 @@
 
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
-read -p "How many tunnels you want to open (default is UDP): " TUNNEL_AMOUNT
-read -p "Session name: " SESSION_NAME
-
-echo
-echo
-echo "-------- downloading & install rathole to /usr/local/bin/ ----------"
-
-sleep 2
-
-check_and_install_unzip() {
-  if ! command -v unzip &> /dev/null; then
-    echo "-> unzip is not installed. Installing..."
-
-    if [[ $(lsb_release -is) == "Ubuntu" || $(lsb_release -is) == "Debian" ]]; then
-      sudo apt-get update && sudo apt-get install unzip -y
-    elif [[ $(cat /etc/os-release | grep -w ID=centos) ]]; then
-      sudo yum install unzip -y 
-    elif [[ $(cat /etc/os-release | grep -w ID=fedora) ]]; then
-      sudo dnf install unzip -y
-    else
-      echo "-> Unsupported operating system. Please install unzip manually."
-      return 1
-    fi
-
-    echo "-> unzip installed successfully."
-  fi
+set_secret_key() {
+   if [ -f .env ]; then
+       if grep -q '^SECRET_KEY=' .env; then
+           echo "-> SECRET_KEY already exists in the .env file. Not generating a new key."
+       fi
+   else
+        SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+        echo "SECRET_KEY=$SECRET_KEY" > .env
+        echo "-> New SECRET_KEY has been set in the .env file."
+   fi
 }
-
 
 download_with_progress() {
   local url="$1"
@@ -47,6 +30,13 @@ download_with_progress() {
   fi
 }
 
+echo "-------- downloading & install rathole to /usr/local/bin/ ----------"
+
+if ! command -v unzip &> /dev/null; then
+    echo "-> unzip is not installed. Installing..."
+    sudo apt-get update -y && sudo apt-get install unzip -y &> /dev/null
+fi
+
 echo "-> Start downloading rathole"
 
 # ----------- ratholde download logic ------------
@@ -58,7 +48,6 @@ download_with_progress "$download_url" "$download_filename"
 # -------------------------------------------------
 
 echo "-> Extracting rathole"
-check_and_install_unzip
 
 # -------------------------------------------------
 if [[ "${download_filename}" =~ \.zip$ ]]; then
@@ -73,28 +62,9 @@ fi
 
 chmod +x ./rathole
 
-mv -f rathole /usr/local/bin/
+sudo mv -f rathole /usr/local/bin/
 
-rm -f "$download_filename"  
-
-# --------------------- end logic for download rathole and install it to /usr/local/bin/ --------------------------
-
-
-# --------------------- logic for generate rathole server conf file ----------------------------
-
-echo
-echo
-echo "-------- preapre rathole config on /etc/rathole/  ----------"
-echo "-> Prepare config for ${TUNNEL_AMOUNT} tunnels"
-
-mkdir tunnel_config &> /dev/null
-
-sudo apt install python3-pip -y &> /dev/null
-
-sudo apt install python3-requests -y &> /dev/null
-
-
-./server_conf_generator.py ${TUNNEL_AMOUNT} ${SESSION_NAME}
+sudo rm -f "$download_filename"  
 
 sudo cp -f ratholes@.service /etc/systemd/system/
 
@@ -102,23 +72,48 @@ sudo mkdir -p /etc/rathole &> /dev/null
 
 sudo systemctl daemon-reload
 
-sudo mv -f tunnel_config/server* /etc/rathole/
+# --------------------- end logic for download rathole and install it to /usr/local/bin/ --------------------------
 
-echo "----------------------------------------------"
+
+
+# # --------------------- logic for preapre to run server ----------------------------
+
 echo
 echo
-echo "-------------------- starting rathole instance --------------"
-config_dir="/etc/rathole"
+echo "-------- preapre for running reversed proxy server  ----------"
 
-for filename in "$config_dir"/*.toml; do
-  service_name="${filename##*/}"
-  service_name="${service_name%.*}"
 
-  sudo systemctl enable "ratholes@$service_name" --now &>/dev/null
+sudo apt install python3-pip -y &> /dev/null
 
-  echo "Started service: ratholes@$service_name"
-done
+sudo apt install python3-requests -y &> /dev/null
 
-echo "-> Showing all instance status"
+sudo apt-get install -y python3-flask &> /dev/null
 
-sudo systemctl list-units --type=service --no-pager | grep ratholes
+set_secret_key
+
+export $(cat .env)
+
+chmod +x Reversed_Server/run.py
+
+./Reversed_Server/run.py
+
+
+
+# echo "----------------------------------------------"
+# echo
+# echo
+# echo "-------------------- starting rathole instance --------------"
+# config_dir="/etc/rathole"
+
+# for filename in "$config_dir"/*.toml; do
+#   service_name="${filename##*/}"
+#   service_name="${service_name%.*}"
+
+#   sudo systemctl enable "ratholes@$service_name" --now &>/dev/null
+
+#   echo "Started service: ratholes@$service_name"
+# done
+
+# echo "-> Showing all instance status"
+
+# sudo systemctl list-units --type=service --no-pager | grep ratholes

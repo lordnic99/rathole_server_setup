@@ -7,6 +7,7 @@ import random
 from requests import get
 import os
 from pathlib import Path
+import csv
 
 TUNNLE_CONFIG_AMOUNT = int(sys.argv[1])
 SESSION_NAME = sys.argv[2]

@@ -1,0 +1,3 @@
+[submodule "Reversed_Server"]
+	path = Reversed_Server
+	url = https://github.com/lordnic99/Reversed_Server.git
