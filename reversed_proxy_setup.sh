@@ -112,6 +112,7 @@ sudo systemctl restart mysql
 
 mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
 
+./Reversed_Server/run.py
 
 # ---- sql database ok -------------
 
