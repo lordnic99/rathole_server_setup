@@ -1,0 +1,15 @@
+[Unit]
+Description=Reversed Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=1048576
+WorkingDirectory=/root/.reversed_server
+ExecStart=/root/.reversed_server/server_start.sh
+
+[Install]
+WantedBy=multi-user.target

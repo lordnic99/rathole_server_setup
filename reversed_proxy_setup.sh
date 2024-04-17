@@ -3,6 +3,7 @@
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
 sudo apt-get update -y &> /dev/null
+PUBLIC_IP=$(curl -s ifconfig.me)
 
 set_secret_key() {
    if [ -f .env ]; then
@@ -91,10 +92,9 @@ sudo apt install python3-requests -y &> /dev/null
 sudo apt-get install -y python3-flask &> /dev/null
 
 sudo apt-get install -y python3-sqlalchemy &> /dev/null
+sudo apt-get install -y python3-waitress &> /dev/null
 
 set_secret_key
-
-export $(cat .env)
 
 chmod +x Reversed_Server/run.py
 
@@ -112,7 +112,7 @@ sudo systemctl restart mysql
 
 mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
 
-./Reversed_Server/run.py
+
 
 # ---- sql database ok -------------
 
@@ -136,3 +136,15 @@ mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
 # echo "-> Showing all instance status"
 
 # sudo systemctl list-units --type=service --no-pager | grep ratholes
+echo
+echo
+echo "--------- Installing reversed server -------------"
+
+export $(cat .env)
+sudo cp .env Reversed_Server/.env
+chmod +x Reversed_Server/server_start.sh
+sudo rm -rf ~/.reversed_server
+sudo cp -r Reversed_Server ~/.reversed_server
+sudo cp -f Reversed_Server.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable Reversed_Server --now
