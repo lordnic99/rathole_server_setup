@@ -3,7 +3,7 @@
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
 sudo apt-get update -y &> /dev/null
-PUBLIC_IP=$(curl -s ifconfig.me)
+PUBLIC_IP=$(curl --silent https://api.ipify.org) || exit 1
 
 set_secret_key() {
    if [ -f .env ]; then
@@ -85,6 +85,8 @@ echo
 echo "-------- preapre for running reversed proxy server  ----------"
 echo
 
+echo "-> Installing dependencies for set up reversed proxy server"
+
 sudo apt install python3-pip -y &> /dev/null
 
 sudo apt install python3-requests -y &> /dev/null
@@ -93,7 +95,7 @@ sudo apt-get install -y python3-flask &> /dev/null
 
 sudo apt-get install -y python3-sqlalchemy &> /dev/null
 sudo apt-get install -y python3-waitress &> /dev/null
-
+echo "-> Dependencies install OK"
 set_secret_key
 
 chmod +x Reversed_Server/run.py
@@ -113,6 +115,7 @@ sudo systemctl restart mysql
 mysql -u root -p"root" -e "CREATE DATABASE proxy_endpoint;" &> /dev/null
 
 
+echo "-> Database setup OK"
 
 # ---- sql database ok -------------
 
