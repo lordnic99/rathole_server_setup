@@ -7,6 +7,7 @@ sudo systemctl disable Reversed_Server.service
 sudo rm -rf /root/.config/reversed_server
 sudo rm /etc/systemd/system/Reversed_Server.service
 sudo rm -rf /root/.reversed_server
+sudo rm -rf /etc/rathole/*
 
 
 # Disable all instances of the service
